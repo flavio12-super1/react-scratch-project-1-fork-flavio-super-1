@@ -3,6 +3,8 @@ const app = express();
 const path = require("path");
 const port = 3000;
 
+//added hello world comment to index.js
+
 app.use(
   express.static(path.join(__dirname, "../frontend/dist"), { index: false })
 );
