@@ -8,6 +8,7 @@ const styles = stylex.create({
     transition: "height 0.3s ease, background-color 0.3s ease",
   }),
   bar: (settings) => ({
+    height: "100%",
     position: "relative",
     overflow: "hidden",
     height: settings.height,
@@ -16,7 +17,6 @@ const styles = stylex.create({
 
     ":hover": {
       backgroundColor: tinycolor(settings.color).darken(20).toString(),
-      height: "100%",
     },
   }),
 });
