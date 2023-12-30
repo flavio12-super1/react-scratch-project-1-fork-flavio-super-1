@@ -1,0 +1,363 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        background-color: black;
+      }
+      #resizableDiv {
+        width: 500px;
+        height: 500px;
+        background-color: white;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .resize-handle {
+        width: 10px;
+        height: 10px;
+        background-color: red;
+        position: absolute;
+        cursor: pointer;
+      }
+
+      .top-left {
+        top: -5px;
+        left: -5px;
+        cursor: nw-resize;
+      }
+      .top-right {
+        top: -5px;
+        right: -5px;
+        cursor: ne-resize;
+      }
+      .bottom-left {
+        bottom: -5px;
+        left: -5px;
+        cursor: sw-resize;
+      }
+      .bottom-right {
+        bottom: -5px;
+        right: -5px;
+        cursor: se-resize;
+      }
+      .top {
+        top: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        cursor: n-resize;
+      }
+      .bottom {
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        cursor: s-resize;
+      }
+      .left {
+        top: 50%;
+        left: -5px;
+        transform: translateY(-50%);
+        cursor: w-resize;
+      }
+      .right {
+        top: 50%;
+        right: -5px;
+        transform: translateY(-50%);
+        cursor: e-resize;
+      }
+    </style>
+    <title>Resizable Div</title>
+  </head>
+  <body>
+    <div id="resizableDiv">
+      <div class="resize-handle top-left"></div>
+      <div class="resize-handle top-right"></div>
+      <div class="resize-handle bottom-left"></div>
+      <div class="resize-handle bottom-right"></div>
+      <div class="resize-handle top"></div>
+      <div class="resize-handle bottom"></div>
+      <div class="resize-handle left"></div>
+      <div class="resize-handle right"></div>
+
+      <div style="width: 100%; height: 100%">
+        <img
+          src="https://images.wsj.net/im-497241?width=1280&size=1"
+          alt=""
+          style="width: 100%; height: 100%"
+        />
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const resizableDiv = document.getElementById("resizableDiv");
+        const handles = resizableDiv.querySelectorAll(".resize-handle");
+        let isResizing = false;
+        let currentHandle;
+        let startX, startY;
+        let startWidth, startHeight;
+
+        handles.forEach((handle) => {
+          handle.addEventListener("mousedown", function (event) {
+            isResizing = true;
+            currentHandle = handle;
+            startX = event.clientX;
+            startY = event.clientY;
+            startWidth = parseInt(
+              document.defaultView.getComputedStyle(resizableDiv).width,
+              10
+            );
+            startHeight = parseInt(
+              document.defaultView.getComputedStyle(resizableDiv).height,
+              10
+            );
+            event.preventDefault();
+          });
+        });
+
+        document.addEventListener("mousemove", function (event) {
+          if (isResizing) {
+            const deltaX = event.clientX - startX;
+            const deltaY = event.clientY - startY;
+
+            if (currentHandle.classList.contains("top-left")) {
+              resizableDiv.style.width = startWidth - deltaX - 10 + "px";
+              resizableDiv.style.height = startHeight - deltaY + "px";
+              resizableDiv.style.left = event.clientX + "px";
+              resizableDiv.style.top = event.clientY + "px";
+            } else if (currentHandle.classList.contains("top-right")) {
+              resizableDiv.style.width = startWidth + deltaX + "px";
+              resizableDiv.style.height = startHeight - deltaY - 10 + "px";
+              resizableDiv.style.top = event.clientY + "px";
+            } else if (currentHandle.classList.contains("bottom-left")) {
+              resizableDiv.style.width = startWidth - deltaX - 10 + "px";
+              resizableDiv.style.height = startHeight + deltaY + "px";
+              resizableDiv.style.left = event.clientX + "px";
+            } else if (currentHandle.classList.contains("bottom-right")) {
+              resizableDiv.style.width = startWidth + deltaX + "px";
+              resizableDiv.style.height = startHeight + deltaY + "px";
+            } else if (currentHandle.classList.contains("top")) {
+              resizableDiv.style.height = startHeight - deltaY - 10 + "px";
+              resizableDiv.style.top = event.clientY + "px";
+            } else if (currentHandle.classList.contains("bottom")) {
+              resizableDiv.style.height = startHeight + deltaY + "px";
+            } else if (currentHandle.classList.contains("left")) {
+              resizableDiv.style.width = startWidth - deltaX - 10 + "px";
+              resizableDiv.style.left = event.clientX + "px";
+            } else if (currentHandle.classList.contains("right")) {
+              resizableDiv.style.width = startWidth + deltaX + "px";
+            }
+          }
+        });
+
+        document.addEventListener("mouseup", function () {
+          isResizing = false;
+          currentHandle = null;
+        });
+      });
+    </script>
+  </body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        background-color: black;
+      }
+      #resizableDiv {
+        width: 500px;
+        height: 500px;
+        background-color: white;
+        position: relative;
+        overflow: hidden;
+        transform-origin: top left; /* Set the transform origin to the top left corner */
+      }
+
+      .resize-handle {
+        width: 10px;
+        height: 10px;
+        background-color: red;
+        position: absolute;
+        cursor: pointer;
+      }
+
+      .top-left {
+        top: -5px;
+        left: -5px;
+        cursor: nw-resize;
+      }
+      .top-right {
+        top: -5px;
+        right: -5px;
+        cursor: ne-resize;
+      }
+      .bottom-left {
+        bottom: -5px;
+        left: -5px;
+        cursor: sw-resize;
+      }
+      .bottom-right {
+        bottom: -5px;
+        right: -5px;
+        cursor: se-resize;
+      }
+      .top {
+        top: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        cursor: n-resize;
+      }
+      .bottom {
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        cursor: s-resize;
+      }
+      .left {
+        top: 50%;
+        left: -5px;
+        transform: translateY(-50%);
+        cursor: w-resize;
+      }
+      .right {
+        top: 50%;
+        right: -5px;
+        transform: translateY(-50%);
+        cursor: e-resize;
+      }
+      .rotate-handle {
+        width: 10px;
+        height: 10px;
+        background-color: green;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        position: absolute;
+        cursor: pointer;
+      }
+    </style>
+    <title>Resizable Div</title>
+  </head>
+  <body>
+    <div id="resizableDiv">
+      <div class="resize-handle top-left"></div>
+      <div class="resize-handle top-right"></div>
+      <div class="resize-handle bottom-left"></div>
+      <div class="resize-handle bottom-right"></div>
+      <div class="resize-handle top"></div>
+      <div class="resize-handle bottom"></div>
+      <div class="resize-handle left"></div>
+      <div class="resize-handle right"></div>
+      <div class="rotate-handle"></div>
+
+      <div style="width: 100%; height: 100%">
+        <img
+          src="https://images.wsj.net/im-497241?width=1280&size=1"
+          alt=""
+          style="width: 100%; height: 100%"
+        />
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const resizableDiv = document.getElementById("resizableDiv");
+        const handles = resizableDiv.querySelectorAll(".resize-handle");
+        const rotateHandle = resizableDiv.querySelector(".rotate-handle");
+        let isResizing = false;
+        let isRotating = false;
+        let currentHandle;
+        let startX, startY;
+        let startWidth, startHeight;
+        let startAngle;
+
+        handles.forEach((handle) => {
+          handle.addEventListener("mousedown", function (event) {
+            isResizing = true;
+            currentHandle = handle;
+            startX = event.clientX;
+            startY = event.clientY;
+            startWidth = parseInt(
+              document.defaultView.getComputedStyle(resizableDiv).width,
+              10
+            );
+            startHeight = parseInt(
+              document.defaultView.getComputedStyle(resizableDiv).height,
+              10
+            );
+            event.preventDefault();
+          });
+        });
+
+        rotateHandle.addEventListener("mousedown", function (event) {
+          isRotating = true;
+          startX = event.clientX;
+          startY = event.clientY;
+          startAngle = getRotationAngle(resizableDiv);
+          event.preventDefault();
+        });
+
+        document.addEventListener("mousemove", function (event) {
+          if (isResizing) {
+            const deltaX = event.clientX - startX;
+            const deltaY = event.clientY - startY;
+
+            if (currentHandle.classList.contains("top-left")) {
+              resizableDiv.style.width = startWidth - deltaX - 10 + "px";
+              resizableDiv.style.height = startHeight - deltaY + "px";
+              resizableDiv.style.left = event.clientX + "px";
+              resizableDiv.style.top = event.clientY + "px";
+            } else if (currentHandle.classList.contains("top-right")) {
+              resizableDiv.style.width = startWidth + deltaX + "px";
+              resizableDiv.style.height = startHeight - deltaY - 10 + "px";
+              resizableDiv.style.top = event.clientY + "px";
+            } else if (currentHandle.classList.contains("bottom-left")) {
+              resizableDiv.style.width = startWidth - deltaX - 10 + "px";
+              resizableDiv.style.height = startHeight + deltaY + "px";
+              resizableDiv.style.left = event.clientX + "px";
+            } else if (currentHandle.classList.contains("bottom-right")) {
+              resizableDiv.style.width = startWidth + deltaX + "px";
+              resizableDiv.style.height = startHeight + deltaY + "px";
+            } else if (currentHandle.classList.contains("top")) {
+              resizableDiv.style.height = startHeight - deltaY - 10 + "px";
+              resizableDiv.style.top = event.clientY + "px";
+            } else if (currentHandle.classList.contains("bottom")) {
+              resizableDiv.style.height = startHeight + deltaY + "px";
+            } else if (currentHandle.classList.contains("left")) {
+              resizableDiv.style.width = startWidth - deltaX - 10 + "px";
+              resizableDiv.style.left = event.clientX + "px";
+            } else if (currentHandle.classList.contains("right")) {
+              resizableDiv.style.width = startWidth + deltaX + "px";
+            }
+          } else if (isRotating) {
+            const deltaX = event.clientX - startX;
+            const deltaY = event.clientY - startY;
+            const angle = Math.atan2(deltaY, deltaX);
+            const rotateAngle = angle * (180 / Math.PI) + startAngle;
+            resizableDiv.style.transform = `rotate(${rotateAngle}deg)`;
+          }
+        });
+
+        document.addEventListener("mouseup", function () {
+          isResizing = false;
+          isRotating = false;
+          currentHandle = null;
+        });
+
+        function getRotationAngle(element) {
+          const transform = window
+            .getComputedStyle(element)
+            .getPropertyValue("transform");
+          const matrix = new DOMMatrix(transform);
+          return Math.atan2(matrix.b, matrix.a) * (180 / Math.PI);
+        }
+      });
+    </script>
+  </body>
+</html>

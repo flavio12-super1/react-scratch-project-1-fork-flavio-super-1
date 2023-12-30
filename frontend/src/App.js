@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import Map from "./components/Map";
 import Home from "./components/Home";
 
 function App() {
@@ -7,6 +8,7 @@ function App() {
     <div>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/map" element={<Map />} />
       </Routes>
     </div>
   );
