@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      #square {
+        width: 100px;
+        height: 100px;
+        background-color: blue;
+        position: relative;
+      }
+
+      #handle {
+        width: 20px;
+        height: 20px;
+        background-color: red;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 100%;
+        cursor: pointer;
+        transform: translate(-50%, -50%);
+      }
+    </style>
+    <title>Rotate Square</title>
+  </head>
+  <body>
+    <div id="square">
+      <div id="handle"></div>
+    </div>
+
+    <script>
+      const square = document.getElementById("square");
+      const handle = document.getElementById("handle");
+      let isRotating = false;
+      let initialAngle;
+      let currentRotation = 0;
+
+      handle.addEventListener("mousedown", (e) => {
+        isRotating = true;
+        initialAngle = Math.atan2(
+          e.clientY - square.offsetTop - square.offsetHeight / 2,
+          e.clientX - square.offsetLeft - square.offsetWidth / 2
+        );
+      });
+
+      document.addEventListener("mousemove", (e) => {
+        if (isRotating) {
+          const newAngle = Math.atan2(
+            e.clientY - square.offsetTop - square.offsetHeight / 2,
+            e.clientX - square.offsetLeft - square.offsetWidth / 2
+          );
+          const angleDiff = newAngle - initialAngle;
+          const newRotation = currentRotation + (angleDiff * 180) / Math.PI;
+
+          square.style.transform = `rotate(${newRotation}deg)`;
+        }
+      });
+
+      document.addEventListener("mouseup", () => {
+        if (isRotating) {
+          const computedStyle = window.getComputedStyle(square);
+          const matrix = new DOMMatrix(computedStyle.transform);
+          currentRotation = (Math.atan2(matrix.b, matrix.a) * 180) / Math.PI;
+        }
+        isRotating = false;
+      });
+    </script>
+  </body>
+</html>

@@ -309,29 +309,29 @@
             const deltaY = event.clientY - startY;
 
             if (currentHandle.classList.contains("top-left")) {
-              resizableDiv.style.width = startWidth - deltaX - 10 + "px";
+              resizableDiv.style.width = startWidth - deltaX + "px";
               resizableDiv.style.height = startHeight - deltaY + "px";
-              resizableDiv.style.left = event.clientX + "px";
-              resizableDiv.style.top = event.clientY + "px";
+              resizableDiv.style.left = event.clientX - 8 + "px";
+              resizableDiv.style.top = event.clientY - 30 + "px";
             } else if (currentHandle.classList.contains("top-right")) {
               resizableDiv.style.width = startWidth + deltaX + "px";
-              resizableDiv.style.height = startHeight - deltaY - 10 + "px";
-              resizableDiv.style.top = event.clientY + "px";
+              resizableDiv.style.height = startHeight - deltaY + "px";
+              resizableDiv.style.top = event.clientY - 30 + "px";
             } else if (currentHandle.classList.contains("bottom-left")) {
-              resizableDiv.style.width = startWidth - deltaX - 10 + "px";
+              resizableDiv.style.width = startWidth - deltaX + "px";
               resizableDiv.style.height = startHeight + deltaY + "px";
-              resizableDiv.style.left = event.clientX + "px";
+              resizableDiv.style.left = event.clientX - 8 + "px";
             } else if (currentHandle.classList.contains("bottom-right")) {
               resizableDiv.style.width = startWidth + deltaX + "px";
               resizableDiv.style.height = startHeight + deltaY + "px";
             } else if (currentHandle.classList.contains("top")) {
-              resizableDiv.style.height = startHeight - deltaY - 10 + "px";
-              resizableDiv.style.top = event.clientY + "px";
+              resizableDiv.style.height = startHeight - deltaY + "px";
+              resizableDiv.style.top = event.clientY - 30 + "px";
             } else if (currentHandle.classList.contains("bottom")) {
               resizableDiv.style.height = startHeight + deltaY + "px";
             } else if (currentHandle.classList.contains("left")) {
-              resizableDiv.style.width = startWidth - deltaX - 10 + "px";
-              resizableDiv.style.left = event.clientX + "px";
+              resizableDiv.style.width = startWidth - deltaX + "px";
+              resizableDiv.style.left = event.clientX - 10 + "px";
             } else if (currentHandle.classList.contains("right")) {
               resizableDiv.style.width = startWidth + deltaX + "px";
             }

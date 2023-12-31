@@ -1,0 +1,755 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      canvas {
+        border: 1px solid #000;
+      }
+      .optionsContainer {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .margin-right {
+        margin-right: 10px;
+      }
+      .divider {
+        margin: 0 10px;
+      }
+    </style>
+    <title>Canvas Draw</title>
+  </head>
+  <body>
+    <div class="optionsContainer">
+      <button onclick="toggleEraser()" class="margin-right">
+        Switch to Drawing
+      </button>
+      <button onclick="insertImage()" class="margin-right">Insert Image</button>
+      <button onclick="addLayer()" class="margin-right">Add Layer +</button>
+      <div class="divider">|</div>
+      <div>Pick Color:</div>
+      <input
+        type="color"
+        id="color-picker"
+        class="margin-right"
+        onchange="testing()"
+      />
+    </div>
+
+    <script>
+      let canvases = [createCanvas()];
+      let isErasing = false;
+
+      function testing() {
+        console.log(document.getElementById("color-picker").value);
+      }
+
+      function createCanvas() {
+        const canvas = document.createElement("canvas");
+        canvas.width = 800;
+        canvas.height = 600;
+        document.body.appendChild(canvas);
+
+        const context = canvas.getContext("2d");
+
+        let drawing = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        const getMousePos = (e) => {
+          const rect = canvas.getBoundingClientRect();
+          return {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+          };
+        };
+
+        const startDrawing = (e) => {
+          drawing = true;
+          const pos = getMousePos(e);
+          [lastX, lastY] = [pos.x, pos.y];
+        };
+
+        const draw = (e) => {
+          if (!drawing) return;
+
+          const pos = getMousePos(e);
+
+          context.lineCap = "round";
+          context.lineJoin = "round";
+          context.lineWidth = isErasing ? 10 : 5;
+          context.globalCompositeOperation = isErasing
+            ? "destination-out"
+            : "source-over";
+
+          context.beginPath();
+          context.moveTo(lastX, lastY);
+          context.lineTo(pos.x, pos.y);
+          context.stroke();
+
+          [lastX, lastY] = [pos.x, pos.y];
+        };
+
+        const stopDrawing = () => {
+          drawing = false;
+          context.globalCompositeOperation = "source-over"; // Reset to default drawing mode
+        };
+
+        canvas.addEventListener("mousedown", startDrawing);
+        canvas.addEventListener("mousemove", draw);
+        canvas.addEventListener("mouseup", stopDrawing);
+        canvas.addEventListener("mouseout", stopDrawing);
+
+        return { canvas, context };
+      }
+
+      function toggleEraser() {
+        isErasing = !isErasing;
+      }
+
+      function insertImage() {
+        const canvas = canvases[0].canvas; // Assuming you want to insert image in the first canvas
+        const context = canvas.getContext("2d");
+
+        const image = new Image();
+        image.src =
+          "https://imageio.forbes.com/specials-images/imageserve/5d35eacaf1176b0008974b54/2020-Chevrolet-Corvette-Stingray/0x0.jpg?format=jpg&crop=4560,2565,x790,y784,safe&width=960"; // Replace with the path to your image
+
+        image.onload = () => {
+          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        };
+      }
+
+      function addLayer() {
+        canvases.push(createCanvas());
+      }
+    </script>
+  </body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      canvas {
+        border: 1px solid #000;
+        position: absolute;
+      }
+      .optionsContainer {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .margin-right {
+        margin-right: 10px;
+      }
+      .standard-border {
+        border: 1px solid #000;
+      }
+      .divider {
+        margin: 0 10px;
+      }
+    </style>
+    <title>Canvas Draw</title>
+  </head>
+  <body>
+    <div class="optionsContainer">
+      <button onclick="toggleEraser()" class="margin-right" id="toggleEraser">
+        Switch to Erasing
+      </button>
+      <div class="margin-right standard-border">
+        <button onclick="insertImage()" class="margin-right">
+          Insert Image
+        </button>
+        <input
+          type="text"
+          name=""
+          id="image-upload"
+          placeholder="insert image url"
+        />
+      </div>
+      <button onclick="addLayer()" class="margin-right">Add Layer +</button>
+      <div id="layers"></div>
+      <div class="divider">|</div>
+      <div>Pick Color:</div>
+      <input
+        type="color"
+        id="color-picker"
+        class="margin-right"
+        onchange="updateStrokeColor()"
+      />
+    </div>
+
+    <script>
+      let canvases = [];
+      let isErasing = false;
+      let strokeColor = "#000"; // Default stroke color
+
+      function createCanvas() {
+        const canvas = document.createElement("canvas");
+        canvas.width = 800;
+        canvas.height = 600;
+        document.body.appendChild(canvas);
+
+        const context = canvas.getContext("2d");
+
+        let drawing = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        const getMousePos = (e) => {
+          const rect = canvas.getBoundingClientRect();
+          return {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+          };
+        };
+
+        const startDrawing = (e) => {
+          drawing = true;
+          const pos = getMousePos(e);
+          [lastX, lastY] = [pos.x, pos.y];
+        };
+
+        const draw = (e) => {
+          if (!drawing) return;
+
+          const pos = getMousePos(e);
+
+          context.lineCap = "round";
+          context.lineJoin = "round";
+          context.lineWidth = isErasing ? 10 : 5;
+          context.globalCompositeOperation = isErasing
+            ? "destination-out"
+            : "source-over";
+
+          // Set the stroke color
+          context.strokeStyle = strokeColor;
+
+          context.beginPath();
+          context.moveTo(lastX, lastY);
+          context.lineTo(pos.x, pos.y);
+          context.stroke();
+
+          [lastX, lastY] = [pos.x, pos.y];
+        };
+
+        const stopDrawing = () => {
+          drawing = false;
+          context.globalCompositeOperation = "source-over"; // Reset to default drawing mode
+        };
+
+        canvas.addEventListener("mousedown", startDrawing);
+        canvas.addEventListener("mousemove", draw);
+        canvas.addEventListener("mouseup", stopDrawing);
+        canvas.addEventListener("mouseout", stopDrawing);
+
+        return { canvas, context };
+      }
+
+      function toggleEraser() {
+        isErasing = !isErasing;
+        document.getElementById("toggleEraser").innerHTML = isErasing
+          ? "Switch to Drawing"
+          : "Switch to Erasing";
+      }
+
+      function updateStrokeColor() {
+        strokeColor = document.getElementById("color-picker").value;
+      }
+
+      function insertImage() {
+        const canvas = canvases[0].canvas; // Assuming you want to insert an image in the first canvas
+        const context = canvas.getContext("2d");
+
+        const image = new Image();
+        image.src = document.getElementById("image-upload").value; // Replace with the path to your image
+
+        image.onload = () => {
+          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        };
+      }
+
+      function addLayer() {
+        const newCanvas = createCanvas();
+        canvases.push(newCanvas);
+        createLayerButton(canvases.length - 1);
+      }
+
+      function createLayerButton(index) {
+        const layerButton = document.createElement("button");
+        layerButton.innerHTML = `Layer ${index + 1}`;
+        layerButton.onclick = function () {
+          bringToTop(index);
+        };
+
+        document.getElementById("layers").appendChild(layerButton);
+      }
+
+      function bringToTop(index) {
+        const canvas = canvases[index].canvas;
+        canvas.style.zIndex = ++maxZIndex;
+      }
+
+      let maxZIndex = 1; // Tracks the maximum z-index value
+
+      // Add the first canvas
+      addLayer();
+    </script>
+  </body>
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      canvas {
+        border: 1px solid #000;
+        position: absolute;
+      }
+      .optionsContainer {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .margin-right {
+        margin-right: 10px;
+      }
+      .standard-border {
+        border: 1px solid #000;
+      }
+      .divider {
+        margin: 0 10px;
+      }
+    </style>
+    <title>Canvas Draw</title>
+  </head>
+  <body>
+    <div class="optionsContainer">
+      <button onclick="toggleEraser()" class="margin-right">
+        Switch to Drawing
+      </button>
+      <div class="margin-right standard-border">
+        <button onclick="insertImage()" class="margin-right">
+          Insert Image
+        </button>
+        <input
+          type="text"
+          name=""
+          id="image-upload"
+          placeholder="insert image url"
+        />
+      </div>
+      <button onclick="addLayer()" class="margin-right">Add Layer +</button>
+      <div class="divider">|</div>
+      <div>Pick Color:</div>
+      <input
+        type="color"
+        id="color-picker"
+        class="margin-right"
+        onchange="updateStrokeColor()"
+      />
+    </div>
+
+    <script>
+      let canvases = [createCanvas()];
+      let isErasing = false;
+      let strokeColor = "#000"; // Default stroke color
+
+      function createCanvas() {
+        const canvas = document.createElement("canvas");
+        canvas.width = 800;
+        canvas.height = 600;
+        document.body.appendChild(canvas);
+
+        const context = canvas.getContext("2d");
+
+        let drawing = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        const getMousePos = (e) => {
+          const rect = canvas.getBoundingClientRect();
+          return {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+          };
+        };
+
+        const startDrawing = (e) => {
+          drawing = true;
+          const pos = getMousePos(e);
+          [lastX, lastY] = [pos.x, pos.y];
+        };
+
+        const draw = (e) => {
+          if (!drawing) return;
+
+          const pos = getMousePos(e);
+
+          context.lineCap = "round";
+          context.lineJoin = "round";
+          context.lineWidth = isErasing ? 10 : 5;
+          context.globalCompositeOperation = isErasing
+            ? "destination-out"
+            : "source-over";
+
+          // Set the stroke color
+          context.strokeStyle = strokeColor;
+
+          context.beginPath();
+          context.moveTo(lastX, lastY);
+          context.lineTo(pos.x, pos.y);
+          context.stroke();
+
+          [lastX, lastY] = [pos.x, pos.y];
+        };
+
+        const stopDrawing = () => {
+          drawing = false;
+          context.globalCompositeOperation = "source-over"; // Reset to default drawing mode
+        };
+
+        canvas.addEventListener("mousedown", startDrawing);
+        canvas.addEventListener("mousemove", draw);
+        canvas.addEventListener("mouseup", stopDrawing);
+        canvas.addEventListener("mouseout", stopDrawing);
+
+        return { canvas, context };
+      }
+
+      function toggleEraser() {
+        isErasing = !isErasing;
+      }
+
+      function updateStrokeColor() {
+        strokeColor = document.getElementById("color-picker").value;
+      }
+
+      function insertImage() {
+        const canvas = canvases[0].canvas; // Assuming you want to insert an image in the first canvas
+        const context = canvas.getContext("2d");
+
+        const image = new Image();
+        image.src = document.getElementById("image-upload").value; // Replace with the path to your image
+
+        image.onload = () => {
+          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        };
+      }
+
+      function addLayer() {
+        canvases.push(createCanvas());
+      }
+    </script>
+  </body>
+</html> -->
+
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      #canvas-container {
+        position: relative;
+      }
+
+      #canvas {
+        border: 1px solid #000;
+      }
+
+      #image-upload {
+        margin-top: 10px;
+      }
+    </style>
+    <title>Image Drag and Drop</title>
+  </head>
+  <body>
+    <div id="canvas-container">
+      <canvas id="canvas" width="1500" height="1500"></canvas>
+    </div>
+    <input type="file" id="image-upload" accept="image/*" />
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        let imageObj = null;
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        const imageUpload = document.getElementById("image-upload");
+        imageUpload.addEventListener("change", handleImageUpload);
+
+        canvas.addEventListener("mousedown", handleMouseDown);
+        canvas.addEventListener("mousemove", handleMouseMove);
+        canvas.addEventListener("mouseup", handleMouseUp);
+
+        function handleImageUpload(event) {
+          const file = event.target.files[0];
+
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              const img = new Image();
+              img.onload = function () {
+                // Set the initial position
+                imageObj = { img, x: 0, y: 0 };
+                drawImage();
+              };
+              img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+          }
+        }
+
+        function drawImage() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(
+            imageObj.img,
+            imageObj.x,
+            imageObj.y,
+            imageObj.img.width,
+            imageObj.img.height
+          );
+        }
+
+        function handleMouseDown(event) {
+          const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+          const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+
+          if (
+            mouseX >= imageObj.x &&
+            mouseX <= imageObj.x + imageObj.img.width &&
+            mouseY >= imageObj.y &&
+            mouseY <= imageObj.y + imageObj.img.height
+          ) {
+            isDragging = true;
+            offsetX = mouseX - imageObj.x;
+            offsetY = mouseY - imageObj.y;
+          }
+        }
+
+        function handleMouseMove(event) {
+          if (isDragging) {
+            const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+            const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+
+            imageObj.x = mouseX - offsetX;
+            imageObj.y = mouseY - offsetY;
+
+            drawImage();
+          }
+        }
+
+        function handleMouseUp() {
+          isDragging = false;
+        }
+      });
+    </script>
+  </body>
+</html> -->
+
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      #canvas {
+        border: 1px solid #000;
+        cursor: pointer;
+      }
+    </style>
+    <title>Canvas with "Button" and Text</title>
+  </head>
+  <body>
+    <canvas id="canvas" width="500" height="500"></canvas>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Draw a "button" inside the canvas
+        ctx.fillStyle = "#ccc";
+        ctx.fillRect(50, 50, 100, 40);
+
+        // Draw text inside the canvas
+        ctx.fillStyle = "#000";
+        ctx.font = "14px Arial";
+        ctx.fillText("Click me", 70, 75);
+
+        // Add click event listener to the canvas
+        canvas.addEventListener("click", handleClick);
+
+        function handleClick(event) {
+          const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+          const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+
+          // Check if the click is inside the "button" area
+          if (mouseX >= 50 && mouseX <= 150 && mouseY >= 50 && mouseY <= 90) {
+            alert("Hello, World!");
+          }
+        }
+      });
+    </script>
+  </body>
+</html> -->
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      #resizableDiv {
+        width: 500px;
+        height: 500px;
+        background-color: red;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .resize-handle {
+        width: 10px;
+        height: 10px;
+        background-color: white;
+        position: absolute;
+        cursor: pointer;
+      }
+
+      .top-left {
+        top: -5px;
+        left: -5px;
+        cursor: nw-resize;
+      }
+      .top-right {
+        top: -5px;
+        right: -5px;
+        cursor: ne-resize;
+      }
+      .bottom-left {
+        bottom: -5px;
+        left: -5px;
+        cursor: sw-resize;
+      }
+      .bottom-right {
+        bottom: -5px;
+        right: -5px;
+        cursor: se-resize;
+      }
+      .top {
+        top: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        cursor: n-resize;
+      }
+      .bottom {
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        cursor: s-resize;
+      }
+      .left {
+        top: 50%;
+        left: -5px;
+        transform: translateY(-50%);
+        cursor: w-resize;
+      }
+      .right {
+        top: 50%;
+        right: -5px;
+        transform: translateY(-50%);
+        cursor: e-resize;
+      }
+    </style>
+    <title>Resizable Div</title>
+  </head>
+  <body>
+    <div id="resizableDiv">
+      <div class="resize-handle top-left"></div>
+      <div class="resize-handle top-right"></div>
+      <div class="resize-handle bottom-left"></div>
+      <div class="resize-handle bottom-right"></div>
+      <div class="resize-handle top"></div>
+      <div class="resize-handle bottom"></div>
+      <div class="resize-handle left"></div>
+      <div class="resize-handle right"></div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const resizableDiv = document.getElementById("resizableDiv");
+        const handles = resizableDiv.querySelectorAll(".resize-handle");
+        let isResizing = false;
+        let currentHandle;
+
+        handles.forEach((handle) => {
+          handle.addEventListener("mousedown", function (event) {
+            isResizing = true;
+            currentHandle = handle;
+            event.preventDefault();
+          });
+        });
+
+        document.addEventListener("mousemove", function (event) {
+          if (isResizing) {
+            const rect = resizableDiv.getBoundingClientRect();
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+
+            if (currentHandle.classList.contains("top-left")) {
+              resizableDiv.style.width =
+                rect.right - mouseX + rect.width + "px";
+              resizableDiv.style.height =
+                rect.bottom - mouseY + rect.height + "px";
+              resizableDiv.style.left = mouseX + "px";
+              resizableDiv.style.top = mouseY + "px";
+            } else if (currentHandle.classList.contains("top-right")) {
+              resizableDiv.style.width = mouseX - rect.left + "px";
+              resizableDiv.style.height =
+                rect.bottom - mouseY + rect.height + "px";
+              resizableDiv.style.top = mouseY + "px";
+            } else if (currentHandle.classList.contains("bottom-left")) {
+              resizableDiv.style.width =
+                rect.right - mouseX + rect.width + "px";
+              resizableDiv.style.height = mouseY - rect.top + "px";
+              resizableDiv.style.left = mouseX + "px";
+            } else if (currentHandle.classList.contains("bottom-right")) {
+              resizableDiv.style.width = mouseX - rect.left + "px";
+              resizableDiv.style.height = mouseY - rect.top + "px";
+            } else if (currentHandle.classList.contains("top")) {
+              resizableDiv.style.height = rect.bottom - mouseY + "px";
+              resizableDiv.style.top = mouseY + "px";
+              // alert(rect.bottom + " : " + mouseY);
+            } else if (currentHandle.classList.contains("bottom")) {
+              resizableDiv.style.height = mouseY - rect.top + "px";
+            } else if (currentHandle.classList.contains("left")) {
+              resizableDiv.style.width =
+                rect.right - mouseX + rect.width + "px";
+              resizableDiv.style.left = mouseX + "px";
+            } else if (currentHandle.classList.contains("right")) {
+              resizableDiv.style.width = mouseX - rect.left + "px";
+            }
+          }
+        });
+
+        document.addEventListener("mouseup", function () {
+          isResizing = false;
+          currentHandle = null;
+        });
+      });
+    </script>
+  </body>
+</html> -->
